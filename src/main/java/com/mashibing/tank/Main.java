@@ -1,8 +1,8 @@
 package com.mashibing.tank;
 
-import com.mashibing.tank.abstractfactory.DefaultFactory;
 import com.mashibing.tank.constant.Dir;
 import com.mashibing.tank.constant.Group;
+import com.mashibing.tank.entity.Tank;
 import com.mashibing.tank.util.PropertyMgr;
 
 import java.util.Random;
@@ -22,7 +22,7 @@ public class Main {
         while (true) {
             Thread.sleep(50);
             if (frame.enemyTanks.size() < initTankCount) {
-                frame.enemyTanks.add(DefaultFactory.getInstance().createTank(TankFrame.GAME_WIDTH - 50, new Random().nextInt(TankFrame.GAME_HEIGHT - 50), Dir.LEFT, Group.BAD, frame));
+                frame.enemyTanks.add(new Tank(TankFrame.GAME_WIDTH - 50, new Random().nextInt(TankFrame.GAME_HEIGHT - 50), Dir.LEFT, Group.BAD, frame));
             }
             frame.repaint();
         }

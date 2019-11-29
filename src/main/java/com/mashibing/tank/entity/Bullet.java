@@ -1,10 +1,10 @@
 package com.mashibing.tank.entity;
 
-import com.mashibing.tank.abstractfactory.BaseBullet;
+import com.mashibing.tank.TankFrame;
 import com.mashibing.tank.constant.Dir;
 import com.mashibing.tank.constant.Group;
-import com.mashibing.tank.TankFrame;
 import com.mashibing.tank.util.ResourceMgr;
+import lombok.Data;
 
 import java.awt.*;
 
@@ -14,8 +14,12 @@ import java.awt.*;
  * @date 2019/11/24 00:08
  * @description
  */
-public class Bullet extends BaseBullet {
-
+@Data
+public class Bullet {
+    public int x;
+    public int y;
+    public Group group;
+    public Rectangle rectangle;
     private Dir dir;
     private final int speed = 10;
     public static final int width = ResourceMgr.bu.getWidth();
@@ -30,22 +34,12 @@ public class Bullet extends BaseBullet {
         rectangle = new Rectangle(x, y, width, height);
     }
 
-    @Override
     public Rectangle getRectangle() {
         rectangle.x = this.x;
         rectangle.y = this.y;
         return rectangle;
     }
 
-    public Dir getDir() {
-        return dir;
-    }
-
-    public void setDir(Dir dir) {
-        this.dir = dir;
-    }
-
-    @Override
     public void paint(Graphics g) {
         if (!alive) {
             TankFrame.getInstance().bullets.remove(this);
@@ -89,7 +83,6 @@ public class Bullet extends BaseBullet {
         }
     }
 
-    @Override
     public void die() {
         alive = false;
     }

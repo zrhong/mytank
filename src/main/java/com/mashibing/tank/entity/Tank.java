@@ -1,13 +1,10 @@
 package com.mashibing.tank.entity;
 
 import com.mashibing.tank.TankFrame;
-import com.mashibing.tank.abstractfactory.BaseTank;
-import com.mashibing.tank.abstractfactory.FourDirFactory;
 import com.mashibing.tank.constant.Dir;
 import com.mashibing.tank.constant.Group;
-import com.mashibing.tank.strategy.DefaultFireStrategy;
-import com.mashibing.tank.strategy.FireStrategy;
 import com.mashibing.tank.util.ResourceMgr;
+import lombok.Data;
 
 import java.awt.*;
 import java.util.Random;
@@ -18,7 +15,14 @@ import java.util.Random;
  * @date 2019/11/23 22:55
  * @description
  */
-public class Tank extends BaseTank {
+@Data
+public class Tank {
+    public int x;
+    public int y;
+    public Dir dir;
+    public boolean moving = true;
+    public Group group;
+    public Rectangle rectangle;
     private final int speed = 5;
     private TankFrame tankFrame;
     public static final int width = ResourceMgr.gtu.getWidth();
@@ -28,15 +32,10 @@ public class Tank extends BaseTank {
     private Random random = new Random();
 
 
-    @Override
     public Rectangle getRectangle() {
         rectangle.x = this.x;
         rectangle.y = this.y;
         return rectangle;
-    }
-
-    public void setRectangle(Rectangle rectangle) {
-        this.rectangle = rectangle;
     }
 
     public Tank(int x, int y, Dir dir, Group group, TankFrame tankFrame) {
@@ -51,23 +50,23 @@ public class Tank extends BaseTank {
 
         }
     }
-    @Override
+
     public void paint(Graphics g) {
         if (!alive) {
             tankFrame.enemyTanks.remove(this);
         }
         switch (dir) {
             case LEFT:
-                g.drawImage(ResourceMgr.gtl, x, y, null);
+                g.drawImage(Group.GOOD == group ? ResourceMgr.gtl : ResourceMgr.btl, x, y, null);
                 break;
             case RIGHT:
-                g.drawImage(ResourceMgr.gtr, x, y, null);
+                g.drawImage(Group.GOOD == group ? ResourceMgr.gtr : ResourceMgr.btr, x, y, null);
                 break;
             case UP:
-                g.drawImage(ResourceMgr.gtu, x, y, null);
+                g.drawImage(Group.GOOD == group ? ResourceMgr.gtu : ResourceMgr.btu, x, y, null);
                 break;
             case DOWN:
-                g.drawImage(ResourceMgr.gtd, x, y, null);
+                g.drawImage(Group.GOOD == group ? ResourceMgr.gtd : ResourceMgr.btd, x, y, null);
                 break;
             default:
         }
@@ -103,7 +102,7 @@ public class Tank extends BaseTank {
         }
 
         if (this.group == Group.BAD && random.nextInt(100) > 95) {
-            fire(DefaultFireStrategy.getInstance());
+            fire();
         }
         if (this.group == Group.BAD && random.nextInt(50) > 40) {
             randomDir();
@@ -131,14 +130,16 @@ public class Tank extends BaseTank {
         dir = Dir.values()[random.nextInt(4)];
     }
 
-    @Override
-    public void fire(FireStrategy strategy) {
-        strategy.fire(this);
+    public void fire() {
+        int bX = getX() + Tank.width / 2 - Bullet.width / 2;
+        int bY = getY() + Tank.height / 2 - Bullet.height / 2;
+//        for (Dir dir : Dir.values()) {
+        TankFrame.getInstance().bullets.add(new Bullet(bX, bY, dir, getGroup()));
+//        }
     }
 
-    @Override
     public void die() {
         alive = false;
-        tankFrame.explosions.add(FourDirFactory.getInstance().createExplosion(x, y, tankFrame));
+        tankFrame.explosions.add(new Explosion(x, y, tankFrame));
     }
 }

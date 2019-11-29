@@ -1,12 +1,10 @@
 package com.mashibing.tank;
 
-import com.mashibing.tank.abstractfactory.AbstractGameFactory;
-import com.mashibing.tank.abstractfactory.BaseBullet;
-import com.mashibing.tank.abstractfactory.BaseExplosion;
-import com.mashibing.tank.abstractfactory.BaseTank;
 import com.mashibing.tank.constant.Dir;
 import com.mashibing.tank.constant.Group;
-import com.mashibing.tank.strategy.FourDirFireStrategy;
+import com.mashibing.tank.entity.Bullet;
+import com.mashibing.tank.entity.Explosion;
+import com.mashibing.tank.entity.Tank;
 import com.mashibing.tank.util.PropertyMgr;
 
 import java.awt.*;
@@ -14,7 +12,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,11 +23,10 @@ import java.util.List;
  */
 
 public class TankFrame extends Frame {
-    private AbstractGameFactory gameFactory;
-    private BaseTank myTank;
-    public List<BaseBullet> bullets = new ArrayList<>();
-    public List<BaseTank> enemyTanks = new ArrayList<>();
-    public List<BaseExplosion> explosions = new ArrayList<>();
+    private Tank myTank = new Tank(20, 200, Dir.RIGHT, Group.GOOD, this);
+    public List<Bullet> bullets = new ArrayList<>();
+    public List<Tank> enemyTanks = new ArrayList<>();
+    public List<Explosion> explosions = new ArrayList<>();
     public static final int GAME_WIDTH, GAME_HEIGHT;
 
     static {
@@ -57,12 +53,6 @@ public class TankFrame extends Frame {
                 System.exit(0);
             }
         });
-        try {
-            gameFactory = (AbstractGameFactory) Class.forName(PropertyMgr.getPropString("goodTankFactory")).getDeclaredConstructor().newInstance();
-            myTank = gameFactory.createTank(20, 100, Dir.RIGHT, Group.GOOD, this);
-        } catch (ClassNotFoundException | InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
         this.addKeyListener(new MyKeyListener());
     }
 
@@ -97,7 +87,7 @@ public class TankFrame extends Frame {
         }
     }
 
-    private void intersectDeal(BaseBullet bullet, BaseTank tank) {
+    private void intersectDeal(Bullet bullet, Tank tank) {
         if (bullet.getGroup().equals(tank.getGroup())) {
             return;
         }
@@ -197,7 +187,7 @@ public class TankFrame extends Frame {
                     bd = false;
                     break;
                 case KeyEvent.VK_SPACE:
-                    myTank.fire(FourDirFireStrategy.getInstance());
+                    myTank.fire();
                     break;
                 default:
             }
