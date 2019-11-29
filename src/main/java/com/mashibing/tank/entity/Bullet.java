@@ -1,4 +1,10 @@
-package com.mashibing.tank;
+package com.mashibing.tank.entity;
+
+import com.mashibing.tank.abstractfactory.BaseBullet;
+import com.mashibing.tank.constant.Dir;
+import com.mashibing.tank.constant.Group;
+import com.mashibing.tank.TankFrame;
+import com.mashibing.tank.util.ResourceMgr;
 
 import java.awt.*;
 
@@ -8,45 +14,27 @@ import java.awt.*;
  * @date 2019/11/24 00:08
  * @description
  */
-public class Bullet {
-    private int x;
-    private int y;
+public class Bullet extends BaseBullet {
+
     private Dir dir;
     private final int speed = 10;
     public static final int width = ResourceMgr.bu.getWidth();
     public static final int height = ResourceMgr.bu.getHeight();
     private boolean alive = true;
-    private TankFrame tankFrame;
-    private Group group;
-    public Rectangle rectangle = new Rectangle(x,y, width, height);
-    public Bullet(int x, int y, Dir dir, Group group, TankFrame tankFrame) {
+
+    public Bullet(int x, int y, Dir dir, Group group) {
         this.x = x;
         this.y = y;
         this.dir = dir;
         this.group = group;
-        this.tankFrame = tankFrame;
+        rectangle = new Rectangle(x, y, width, height);
     }
 
+    @Override
     public Rectangle getRectangle() {
         rectangle.x = this.x;
         rectangle.y = this.y;
         return rectangle;
-    }
-
-    public int getX() {
-        return x;
-    }
-
-    public void setX(int x) {
-        this.x = x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public void setY(int y) {
-        this.y = y;
     }
 
     public Dir getDir() {
@@ -57,17 +45,10 @@ public class Bullet {
         this.dir = dir;
     }
 
-    public Group getGroup() {
-        return group;
-    }
-
-    public void setGroup(Group group) {
-        this.group = group;
-    }
-
+    @Override
     public void paint(Graphics g) {
         if (!alive) {
-            tankFrame.bullets.remove(this);
+            TankFrame.getInstance().bullets.remove(this);
         }
         switch (dir) {
             case LEFT:
@@ -108,6 +89,7 @@ public class Bullet {
         }
     }
 
+    @Override
     public void die() {
         alive = false;
     }

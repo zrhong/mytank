@@ -1,4 +1,13 @@
-package com.mashibing.tank;
+package com.mashibing.tank.entity;
+
+import com.mashibing.tank.TankFrame;
+import com.mashibing.tank.abstractfactory.BaseTank;
+import com.mashibing.tank.abstractfactory.FourDirFactory;
+import com.mashibing.tank.constant.Dir;
+import com.mashibing.tank.constant.Group;
+import com.mashibing.tank.strategy.DefaultFireStrategy;
+import com.mashibing.tank.strategy.FireStrategy;
+import com.mashibing.tank.util.ResourceMgr;
 
 import java.awt.*;
 import java.util.Random;
@@ -9,21 +18,17 @@ import java.util.Random;
  * @date 2019/11/23 22:55
  * @description
  */
-public class Tank {
-    private int x;
-    private int y;
-    private Dir dir = Dir.RIGHT;
+public class Tank extends BaseTank {
     private final int speed = 5;
-    private boolean moving = true;
     private TankFrame tankFrame;
     public static final int width = ResourceMgr.gtu.getWidth();
     public static final int height = ResourceMgr.gtu.getHeight();
     private boolean alive = true;
-    private Group group = Group.BAD;
+
     private Random random = new Random();
-    private Rectangle rectangle = new Rectangle(x, y, width, height);
 
 
+    @Override
     public Rectangle getRectangle() {
         rectangle.x = this.x;
         rectangle.y = this.y;
@@ -40,59 +45,29 @@ public class Tank {
         this.dir = dir;
         this.group = group;
         this.tankFrame = tankFrame;
+        rectangle = new Rectangle(x, y, width, height);
         if (group.equals(Group.GOOD)) {
             moving = false;
+
         }
     }
-
-    public Group getGroup() {
-        return group;
-    }
-
-    public void setGroup(Group group) {
-        this.group = group;
-    }
-
-    public void setDir(Dir dir) {
-        this.dir = dir;
-    }
-
-    public void setMoving(boolean moving) {
-        this.moving = moving;
-    }
-
-    public int getX() {
-        return x;
-    }
-
-    public void setX(int x) {
-        this.x = x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public void setY(int y) {
-        this.y = y;
-    }
-
+    @Override
     public void paint(Graphics g) {
         if (!alive) {
             tankFrame.enemyTanks.remove(this);
         }
         switch (dir) {
             case LEFT:
-                g.drawImage(this.group == Group.GOOD ? ResourceMgr.gtl : ResourceMgr.btl, x, y, null);
+                g.drawImage(ResourceMgr.gtl, x, y, null);
                 break;
             case RIGHT:
-                g.drawImage(this.group == Group.GOOD ? ResourceMgr.gtr : ResourceMgr.btr, x, y, null);
+                g.drawImage(ResourceMgr.gtr, x, y, null);
                 break;
             case UP:
-                g.drawImage(this.group == Group.GOOD ? ResourceMgr.gtu : ResourceMgr.btu, x, y, null);
+                g.drawImage(ResourceMgr.gtu, x, y, null);
                 break;
             case DOWN:
-                g.drawImage(this.group == Group.GOOD ? ResourceMgr.gtd : ResourceMgr.btd, x, y, null);
+                g.drawImage(ResourceMgr.gtd, x, y, null);
                 break;
             default:
         }
@@ -128,7 +103,7 @@ public class Tank {
         }
 
         if (this.group == Group.BAD && random.nextInt(100) > 95) {
-            fire();
+            fire(DefaultFireStrategy.getInstance());
         }
         if (this.group == Group.BAD && random.nextInt(50) > 40) {
             randomDir();
@@ -156,30 +131,14 @@ public class Tank {
         dir = Dir.values()[random.nextInt(4)];
     }
 
-    public void fire() {
-//        int bx = this.x + this.width / 2 ;
-//        int by = this.y + this.height / 2;
-//        tankFrame.bullets.add(new Bullet(bx, by, this.dir, this.tankFrame));
-        switch (dir) {
-            case RIGHT:
-                tankFrame.bullets.add(new Bullet(this.x + 65, this.y + 15, this.dir, this.group, this.tankFrame));
-                break;
-            case LEFT:
-                tankFrame.bullets.add(new Bullet(this.x - 30, this.y + 15, this.dir, this.group, this.tankFrame));
-                break;
-            case UP:
-                tankFrame.bullets.add(new Bullet(this.x + 15, this.y - 30, this.dir, this.group, this.tankFrame));
-                break;
-            case DOWN:
-                tankFrame.bullets.add(new Bullet(this.x + 15, this.y + 65, this.dir, this.group, this.tankFrame));
-                break;
-            default:
-
-        }
+    @Override
+    public void fire(FireStrategy strategy) {
+        strategy.fire(this);
     }
 
+    @Override
     public void die() {
         alive = false;
-        tankFrame.explosions.add(new Explosion(x, y, tankFrame));
+        tankFrame.explosions.add(FourDirFactory.getInstance().createExplosion(x, y, tankFrame));
     }
 }

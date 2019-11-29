@@ -1,4 +1,4 @@
-package com.mashibing.tank;
+package com.mashibing.tank.util;
 
 import java.io.IOException;
 import java.util.Properties;
@@ -21,10 +21,15 @@ public class PropertyMgr {
     }
 
     public static Object getProp(String key) {
-        if (properties == null) {
-            return null;
-        }
-        return properties.get(key);
+        return properties == null ? null : properties.get(key);
+    }
+
+    public static String getPropString(String key) {
+        return properties == null ? null : properties.getProperty(key);
+    }
+
+    public static Integer getPropInt(String key) {
+        return properties == null ? null : Integer.valueOf(properties.getProperty(key,"800"));
     }
 
     public static void main(String[] args) {

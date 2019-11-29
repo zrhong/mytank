@@ -1,0 +1,13 @@
+#key-value pair
+#xml yaml
+initTankCount=8
+gameWidth=1280
+gameHeight=768
+
+#tank fire strategy
+tankFireStrategy=DefaultFireStrategy
+colliders=BulletTankCollider,BulletWallCollider,TankWallCollider,TankTankCollider
+
+
+goodTankFactory = com.mashibing.tank.abstractfactory.FourDirFactory
+badTankFactory = com.mashibing.tank.abstractfactory.DefaultFactory

@@ -1,4 +1,4 @@
-package com.mashibing.tank;
+package com.mashibing.tank.constant;
 
 /**
  * @author zhuruihong
