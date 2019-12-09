@@ -1,9 +1,9 @@
 package com.mashibing.tank.strategy;
 
-import com.mashibing.tank.TankFrame;
 import com.mashibing.tank.constant.Dir;
 import com.mashibing.tank.entity.Bullet;
 import com.mashibing.tank.entity.Tank;
+import com.mashibing.tank.facade.GameModel;
 
 /**
  * @author zhuruihong
@@ -27,7 +27,7 @@ public class FourDirFireStrategy implements FireStrategy{
         int bX = tank.getX() + Tank.width / 2 - Bullet.width / 2;
         int bY = tank.getY() + Tank.height / 2 - Bullet.height / 2;
         for (Dir dir : Dir.values()) {
-            TankFrame.getInstance().bullets.add(new Bullet(bX, bY, dir, tank.getGroup()));
+           GameModel.getInstance().bullets.add(new Bullet(bX, bY, dir, tank.getGroup()));
         }
     }
 }

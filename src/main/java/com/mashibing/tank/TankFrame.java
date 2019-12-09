@@ -1,10 +1,9 @@
 package com.mashibing.tank;
 
 import com.mashibing.tank.constant.Dir;
-import com.mashibing.tank.constant.Group;
-import com.mashibing.tank.entity.Bullet;
-import com.mashibing.tank.entity.Explosion;
 import com.mashibing.tank.entity.Tank;
+import com.mashibing.tank.facade.GameModel;
+import com.mashibing.tank.strategy.FourDirFireStrategy;
 import com.mashibing.tank.util.PropertyMgr;
 
 import java.awt.*;
@@ -12,8 +11,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author zhuruihong
@@ -23,10 +20,7 @@ import java.util.List;
  */
 
 public class TankFrame extends Frame {
-    private Tank myTank = new Tank(20, 200, Dir.RIGHT, Group.GOOD, this);
-    public List<Bullet> bullets = new ArrayList<>();
-    public List<Tank> enemyTanks = new ArrayList<>();
-    public List<Explosion> explosions = new ArrayList<>();
+    public GameModel gameModel = GameModel.getInstance();
     public static final int GAME_WIDTH, GAME_HEIGHT;
 
     static {
@@ -58,48 +52,7 @@ public class TankFrame extends Frame {
 
     @Override
     public void paint(Graphics g) {
-        Color color = g.getColor();
-        g.setColor(Color.white);
-        g.drawString("子弹的数量:" + bullets.size(), 5, 50);
-        g.drawString("敌人的数量:" + enemyTanks.size(), 5, 70);
-        g.drawString("爆炸的数量:" + explosions.size(), 5, 90);
-        g.setColor(color);
-        if (myTank != null) {
-            myTank.paint(g);
-        }
-        //迭代器只能在迭代的地方删除，不能其他地方删除，不然会报错  java.util.ConcurrentModificationException
-//        for (Bullet b:bullets) {
-//            b.paint(g);
-//        }
-        for (int i = 0; i < bullets.size(); i++) {
-            bullets.get(i).paint(g);
-        }
-        for (int i = 0; i < enemyTanks.size(); i++) {
-            enemyTanks.get(i).paint(g);
-        }
-        for (int i = 0; i < bullets.size(); i++) {
-            for (int j = 0; j < enemyTanks.size(); j++) {
-                intersectDeal(bullets.get(i), enemyTanks.get(j));
-            }
-        }
-        for (int i = 0; i < explosions.size(); i++) {
-            explosions.get(i).paint(g);
-        }
-    }
-
-    private void intersectDeal(Bullet bullet, Tank tank) {
-        if (bullet.getGroup().equals(tank.getGroup())) {
-            return;
-        }
-        //优化
-        Rectangle rect1 = bullet.getRectangle();
-        Rectangle rect2 = tank.getRectangle();
-//        Rectangle rect1 = new Rectangle(bullet.getX(), bullet.getY(), Bullet.width, Bullet.height);
-//        Rectangle rect2 = new Rectangle(tank.getX(), tank.getY(), Tank.width, Tank.height);
-        if (rect1.intersects(rect2)) {
-            bullet.die();
-            tank.die();
-        }
+        gameModel.paint(g);
     }
 
     Image offScreenImage = null;
@@ -151,6 +104,7 @@ public class TankFrame extends Frame {
         }
 
         private void setTankDir() {
+            Tank myTank = gameModel.getMytank();
             if (!bl && !br && !bu && !bd) {
                 myTank.setMoving(false);
             } else {
@@ -187,7 +141,7 @@ public class TankFrame extends Frame {
                     bd = false;
                     break;
                 case KeyEvent.VK_SPACE:
-                    myTank.fire();
+                    gameModel.getMytank().fire(FourDirFireStrategy.getInstance());
                     break;
                 default:
             }

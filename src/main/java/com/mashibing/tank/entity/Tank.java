@@ -3,6 +3,9 @@ package com.mashibing.tank.entity;
 import com.mashibing.tank.TankFrame;
 import com.mashibing.tank.constant.Dir;
 import com.mashibing.tank.constant.Group;
+import com.mashibing.tank.facade.GameModel;
+import com.mashibing.tank.strategy.DefaultFireStrategy;
+import com.mashibing.tank.strategy.FireStrategy;
 import com.mashibing.tank.util.ResourceMgr;
 import lombok.Data;
 
@@ -24,7 +27,6 @@ public class Tank {
     public Group group;
     public Rectangle rectangle;
     private final int speed = 5;
-    private TankFrame tankFrame;
     public static final int width = ResourceMgr.gtu.getWidth();
     public static final int height = ResourceMgr.gtu.getHeight();
     private boolean alive = true;
@@ -38,12 +40,11 @@ public class Tank {
         return rectangle;
     }
 
-    public Tank(int x, int y, Dir dir, Group group, TankFrame tankFrame) {
+    public Tank(int x, int y, Dir dir, Group group) {
         this.x = x;
         this.y = y;
         this.dir = dir;
         this.group = group;
-        this.tankFrame = tankFrame;
         rectangle = new Rectangle(x, y, width, height);
         if (group.equals(Group.GOOD)) {
             moving = false;
@@ -53,7 +54,7 @@ public class Tank {
 
     public void paint(Graphics g) {
         if (!alive) {
-            tankFrame.enemyTanks.remove(this);
+            GameModel.getInstance().enemyTanks.remove(this);
         }
         switch (dir) {
             case LEFT:
@@ -102,7 +103,7 @@ public class Tank {
         }
 
         if (this.group == Group.BAD && random.nextInt(100) > 95) {
-            fire();
+            fire(DefaultFireStrategy.getInstance());
         }
         if (this.group == Group.BAD && random.nextInt(50) > 40) {
             randomDir();
@@ -130,16 +131,12 @@ public class Tank {
         dir = Dir.values()[random.nextInt(4)];
     }
 
-    public void fire() {
-        int bX = getX() + Tank.width / 2 - Bullet.width / 2;
-        int bY = getY() + Tank.height / 2 - Bullet.height / 2;
-//        for (Dir dir : Dir.values()) {
-        TankFrame.getInstance().bullets.add(new Bullet(bX, bY, dir, getGroup()));
-//        }
+    public void fire(FireStrategy strategy) {
+        strategy.fire(this);
     }
 
     public void die() {
         alive = false;
-        tankFrame.explosions.add(new Explosion(x, y, tankFrame));
+        GameModel.getInstance().explosions.add(new Explosion(x, y));
     }
 }

@@ -3,6 +3,7 @@ package com.mashibing.tank.entity;
 import com.mashibing.tank.TankFrame;
 import com.mashibing.tank.constant.Dir;
 import com.mashibing.tank.constant.Group;
+import com.mashibing.tank.facade.GameModel;
 import com.mashibing.tank.util.ResourceMgr;
 import lombok.Data;
 
@@ -42,7 +43,7 @@ public class Bullet {
 
     public void paint(Graphics g) {
         if (!alive) {
-            TankFrame.getInstance().bullets.remove(this);
+         GameModel.getInstance().bullets.remove(this);
         }
         switch (dir) {
             case LEFT:
