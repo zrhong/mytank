@@ -4,6 +4,7 @@ import com.mashibing.tank.TankFrame;
 import com.mashibing.tank.constant.Dir;
 import com.mashibing.tank.constant.Group;
 import com.mashibing.tank.facade.GameModel;
+import com.mashibing.tank.mediator.GameObject;
 import com.mashibing.tank.util.ResourceMgr;
 import lombok.Data;
 
@@ -16,9 +17,7 @@ import java.awt.*;
  * @description
  */
 @Data
-public class Bullet {
-    public int x;
-    public int y;
+public class Bullet extends GameObject {
     public Group group;
     public Rectangle rectangle;
     private Dir dir;
@@ -41,9 +40,10 @@ public class Bullet {
         return rectangle;
     }
 
+    @Override
     public void paint(Graphics g) {
         if (!alive) {
-         GameModel.getInstance().bullets.remove(this);
+         GameModel.getInstance().objects.remove(this);
         }
         switch (dir) {
             case LEFT:

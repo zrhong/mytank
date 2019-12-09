@@ -6,7 +6,7 @@ gameHeight=768
 
 #tank fire strategy
 tankFireStrategy=DefaultFireStrategy
-colliders=BulletTankCollider,BulletWallCollider,TankWallCollider,TankTankCollider
+colliders=com.mashibing.tank.chainofresponsibility.BulletTankCollider
 
 
 goodTankFactory = com.mashibing.tank.abstractfactory.FourDirFactory

@@ -4,6 +4,7 @@ import com.mashibing.tank.TankFrame;
 import com.mashibing.tank.constant.Dir;
 import com.mashibing.tank.constant.Group;
 import com.mashibing.tank.facade.GameModel;
+import com.mashibing.tank.mediator.GameObject;
 import com.mashibing.tank.strategy.DefaultFireStrategy;
 import com.mashibing.tank.strategy.FireStrategy;
 import com.mashibing.tank.util.ResourceMgr;
@@ -19,9 +20,7 @@ import java.util.Random;
  * @description
  */
 @Data
-public class Tank {
-    public int x;
-    public int y;
+public class Tank extends GameObject {
     public Dir dir;
     public boolean moving = true;
     public Group group;
@@ -52,9 +51,10 @@ public class Tank {
         }
     }
 
+    @Override
     public void paint(Graphics g) {
         if (!alive) {
-            GameModel.getInstance().enemyTanks.remove(this);
+            GameModel.getInstance().objects.remove(this);
         }
         switch (dir) {
             case LEFT:
@@ -137,6 +137,6 @@ public class Tank {
 
     public void die() {
         alive = false;
-        GameModel.getInstance().explosions.add(new Explosion(x, y));
+        GameModel.getInstance().objects.add(new Explosion(x, y));
     }
 }
