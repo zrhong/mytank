@@ -1,6 +1,7 @@
 package com.mashibing.tank.chainofresponsibility;
 
 import com.mashibing.tank.entity.Bullet;
+import com.mashibing.tank.entity.Explosion;
 import com.mashibing.tank.entity.Tank;
 
 import java.awt.*;
@@ -26,6 +27,7 @@ public class BulletTankCollider implements Collider {
             if (rect1.intersects(rect2)) {
                 bullet.die();
                 tank.die();
+                new Explosion((int)rect2.getX(), (int)rect2.getY());
                 return true;
             }
         }

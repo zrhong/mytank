@@ -32,6 +32,7 @@ public class Bullet extends GameObject {
         this.dir = dir;
         this.group = group;
         rectangle = new Rectangle(x, y, width, height);
+        GameModel.getInstance().add(this);
     }
 
     public Rectangle getRectangle() {
@@ -43,7 +44,7 @@ public class Bullet extends GameObject {
     @Override
     public void paint(Graphics g) {
         if (!alive) {
-         GameModel.getInstance().objects.remove(this);
+         GameModel.getInstance().remove(this);
         }
         switch (dir) {
             case LEFT:

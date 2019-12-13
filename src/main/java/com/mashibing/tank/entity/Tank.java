@@ -47,8 +47,8 @@ public class Tank extends GameObject {
         rectangle = new Rectangle(x, y, width, height);
         if (group.equals(Group.GOOD)) {
             moving = false;
-
         }
+        GameModel.getInstance().add(this);
     }
 
     @Override
@@ -137,6 +137,5 @@ public class Tank extends GameObject {
 
     public void die() {
         alive = false;
-        GameModel.getInstance().objects.add(new Explosion(x, y));
     }
 }

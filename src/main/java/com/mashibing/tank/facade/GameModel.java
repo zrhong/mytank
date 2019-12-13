@@ -22,13 +22,19 @@ import java.util.Random;
  */
 public class GameModel {
     private static final GameModel INSTANCE = new GameModel();
-    public Tank myTank = new Tank(20, 200, Dir.RIGHT, Group.GOOD);
+    public Tank myTank;
     public List<GameObject> objects = new ArrayList<>();
     public Collider collider = new ColliiderChain();
-    private GameModel() {
+
+    private GameModel(){}
+    static {
+        INSTANCE.init();
+    }
+    private void init() {
+        myTank = new Tank(20, 200, Dir.RIGHT, Group.GOOD);
         int initTankCount = Integer.valueOf((String) PropertyMgr.getProp("initTankCount"));
         for (int i = 0; i < initTankCount; i++) {
-            objects.add(new Tank(TankFrame.GAME_WIDTH - 50, new Random().nextInt(TankFrame.GAME_HEIGHT - 50), Dir.LEFT, Group.BAD));
+            new Tank(TankFrame.GAME_WIDTH - 50, new Random().nextInt(TankFrame.GAME_HEIGHT - 50), Dir.LEFT, Group.BAD);
         }
     }
 
@@ -64,6 +70,14 @@ public class GameModel {
 
     public Tank getMytank() {
         return myTank;
+    }
+
+    public void add(GameObject object) {
+        objects.add(object);
+    }
+
+    public void remove(GameObject object) {
+        objects.remove(object);
     }
 }
 
