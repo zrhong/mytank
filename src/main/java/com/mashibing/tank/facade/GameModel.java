@@ -10,6 +10,7 @@ import com.mashibing.tank.mediator.GameObject;
 import com.mashibing.tank.util.PropertyMgr;
 
 import java.awt.*;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -78,6 +79,49 @@ public class GameModel {
 
     public void remove(GameObject object) {
         objects.remove(object);
+    }
+
+    public void  save(){
+        ObjectOutputStream outputStream = null;
+        try {
+            outputStream = new ObjectOutputStream(
+                    new FileOutputStream(
+                            new File("E:/ideaWorkspace/mashibing/mytank/src/main/java/com/mashibing/tank/record/tank.data")));
+            outputStream.writeObject(myTank);
+            outputStream.writeObject(objects);
+            outputStream.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally {
+            if (outputStream != null) {
+                try {
+                    outputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public void load(){
+        ObjectInputStream inputStream = null;
+        try {
+            inputStream = new ObjectInputStream(
+                    new FileInputStream(
+                            new File("E:/ideaWorkspace/mashibing/mytank/src/main/java/com/mashibing/tank/record/tank.data")));
+            myTank = (Tank) inputStream.readObject();
+            objects = (List) inputStream.readObject();
+        } catch (Exception e) {
+
+        }finally {
+            if (null != inputStream) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 }
 

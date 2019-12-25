@@ -98,6 +98,16 @@ public class TankFrame extends Frame {
                 case KeyEvent.VK_DOWN:
                     bd = true;
                     break;
+                case KeyEvent.VK_S:
+                    if(e.isControlDown()){//同时按下ctrl+s
+                        gameModel.save();
+                    }
+                    break;
+                case KeyEvent.VK_L:
+                    if(e.isControlDown()){//同时按下ctrl+l
+                        gameModel.load();
+                    }
+                    break;
                 default:
             }
             setTankDir();
