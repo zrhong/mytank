@@ -1,6 +1,6 @@
 package com.mashibing.tank;
 
-import java.util.Random;
+import com.mashibing.tank.net.Client;
 
 /**
  * @author zhuruihong
@@ -10,15 +10,24 @@ import java.util.Random;
  */
 public class Main {
     public static void main(String[] args) throws InterruptedException {
-        TankFrame frame = new TankFrame();
+        TankFrame frame = TankFrame.INSTANCE;
         frame.setLocation(500, 30);
-        int initTankCount = Integer.valueOf((String) PropertyMgr.getProp("initTankCount"));
-        while (true) {
-            Thread.sleep(50);
-            if (frame.enemyTanks.size() < initTankCount) {
-                frame.enemyTanks.add(new Tank(TankFrame.GAME_WIDTH - 50, new Random().nextInt(TankFrame.GAME_HEIGHT - 50), Dir.LEFT, Group.BAD, frame));
+//        int initTankCount = Integer.valueOf((String) PropertyMgr.getProp("initTankCount"));
+//music
+        new Thread(()->new Audio("audio/war1.wav").loop()).start();
+        //ui线程独立开，省的阻塞主线程
+        new Thread(()-> {
+            while(true) {
+                try {
+                    Thread.sleep(25);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                frame.repaint();
             }
-            frame.repaint();
-        }
+        }).start();
+        //连接服务器 发送加入消息
+        Client.INSTANCE.connect();
+
     }
 }

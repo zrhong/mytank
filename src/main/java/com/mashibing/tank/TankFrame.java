@@ -5,8 +5,8 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.*;
 
 /**
  * @author zhuruihong
@@ -16,14 +16,17 @@ import java.util.List;
  */
 
 public class TankFrame extends Frame {
-    private Tank myTank = new Tank(20, 300, Dir.RIGHT, Group.GOOD, this);
+    public static final TankFrame INSTANCE = new TankFrame();
+    Random r = new Random();
+    private Tank myTank = new Tank(r.nextInt(GAME_WIDTH), r.nextInt(GAME_HEIGHT), Dir.RIGHT, Group.GOOD, this);
     List<Bullet> bullets = new ArrayList<>();
-    public List<Tank> enemyTanks = new ArrayList<>();
+    Map<UUID, Tank> tanks = new HashMap<>();
+//    public List<Tank> enemyTanks = new ArrayList<>();
     public List<Explosion> explosions = new ArrayList<>();
     //    Bullet bullet = new Bullet(30, 30, Dir.DOWN);
     public static final int GAME_WIDTH = 1080, GAME_HEIGHT = 960;
 
-    public TankFrame() {
+    private TankFrame() {
         setSize(GAME_WIDTH, GAME_HEIGHT);
         setResizable(false);
         setVisible(true);
@@ -60,6 +63,7 @@ public class TankFrame extends Frame {
                     default:
                 }
                 setTankDir();
+                new Thread(()->new Audio("audio/tank_move.wav").play()).start();
             }
 
             private void setTankDir() {
@@ -113,7 +117,7 @@ public class TankFrame extends Frame {
         Color color = g.getColor();
         g.setColor(Color.white);
         g.drawString("子弹的数量:" + bullets.size(), 5, 50);
-        g.drawString("敌人的数量:" + enemyTanks.size(), 5, 70);
+//        g.drawString("敌人的数量:" + enemyTanks.size(), 5, 70);
         g.drawString("爆炸的数量:" + explosions.size(), 5, 90);
         g.setColor(color);
         myTank.paint(g);
@@ -121,17 +125,21 @@ public class TankFrame extends Frame {
 //        for (Bullet b:bullets) {
 //            b.paint(g);
 //        }
+
         for (int i = 0; i < bullets.size(); i++) {
             bullets.get(i).paint(g);
         }
-        for (int i = 0; i < enemyTanks.size(); i++) {
-            enemyTanks.get(i).paint(g);
-        }
-        for (int i = 0; i < bullets.size(); i++) {
-            for (int j = 0; j < enemyTanks.size(); j++) {
-                intersectDeal(bullets.get(i), enemyTanks.get(j));
-            }
-        }
+
+        //java8 stream api
+        tanks.values().stream().forEach((e)->e.paint(g));
+//        for (int i = 0; i < enemyTanks.size(); i++) {
+//            enemyTanks.get(i).paint(g);
+//        }
+//        for (int i = 0; i < bullets.size(); i++) {
+//            for (int j = 0; j < enemyTanks.size(); j++) {
+//                intersectDeal(bullets.get(i), enemyTanks.get(j));
+//            }
+//        }
         for (int i = 0; i <explosions.size() ; i++) {
             explosions.get(i).paint(g);
         }
@@ -171,5 +179,17 @@ public class TankFrame extends Frame {
         gOffScreen.setColor(c);
         paint(gOffScreen);
         g.drawImage(offScreenImage, 0, 0, null);
+    }
+
+    public Tank getMainTank() {
+        return myTank;
+    }
+
+    public void addTank(Tank tank){
+        tanks.put(tank.getId(), tank);
+    }
+
+    public Tank findTankByUUID(UUID id) {
+        return tanks.get(id);
     }
 }

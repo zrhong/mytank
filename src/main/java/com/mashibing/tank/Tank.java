@@ -1,7 +1,11 @@
 package com.mashibing.tank;
 
+import com.mashibing.tank.net.msg.TankJoinMsg;
+import lombok.Data;
+
 import java.awt.*;
 import java.util.Random;
+import java.util.UUID;
 
 /**
  * @author zhuruihong
@@ -9,6 +13,7 @@ import java.util.Random;
  * @date 2019/11/23 22:55
  * @description
  */
+@Data
 public class Tank {
     private int x;
     private int y;
@@ -19,9 +24,25 @@ public class Tank {
     public static final int width = ResourceMgr.gtu.getWidth();
     public static final int height = ResourceMgr.gtu.getHeight();
     private boolean alive = true;
-    private Group group = Group.BAD;
+    private Group group = Group.GOOD;
     private Random random = new Random();
     private Rectangle rectangle = new Rectangle(x, y, width, height);
+
+    private UUID id = UUID.randomUUID();
+
+    public Tank(TankJoinMsg msg) {
+        this.x = msg.getX();
+        this.y = msg.getY();
+        this.dir = msg.getDir();
+        this.moving = msg.isMoving();
+//        this.group = msg.group;
+        this.id = msg.getId();
+
+        rectangle.x = this.x;
+        rectangle.y = this.y;
+        rectangle.width = width;
+        rectangle.height = height;
+    }
 
 
     public Rectangle getRectangle() {
@@ -45,41 +66,15 @@ public class Tank {
         }
     }
 
-    public Group getGroup() {
-        return group;
-    }
-
-    public void setGroup(Group group) {
-        this.group = group;
-    }
-
-    public void setDir(Dir dir) {
-        this.dir = dir;
-    }
-
-    public void setMoving(boolean moving) {
-        this.moving = moving;
-    }
-
-    public int getX() {
-        return x;
-    }
-
-    public void setX(int x) {
-        this.x = x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public void setY(int y) {
-        this.y = y;
-    }
-
     public void paint(Graphics g) {
+        //uuid on head
+        Color c = g.getColor();
+        g.setColor(Color.YELLOW);
+        g.drawString(id.toString(), this.x, this.y - 20);
+        g.drawString("live=" + alive, x, y-10);
+        g.setColor(c);
         if (!alive) {
-            tankFrame.enemyTanks.remove(this);
+//            tankFrame.enemyTanks.remove(this);
         }
         switch (dir) {
             case LEFT:
@@ -157,9 +152,7 @@ public class Tank {
     }
 
     public void fire() {
-//        int bx = this.x + this.width / 2 ;
-//        int by = this.y + this.height / 2;
-//        tankFrame.bullets.add(new Bullet(bx, by, this.dir, this.tankFrame));
+        new Thread(() -> new Audio("audio/tank_fire.wav").play()).start();
         switch (dir) {
             case RIGHT:
                 tankFrame.bullets.add(new Bullet(this.x + 65, this.y + 15, this.dir, this.group, this.tankFrame));
