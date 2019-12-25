@@ -12,7 +12,6 @@ public class Main {
     public static void main(String[] args) throws InterruptedException {
         TankFrame frame = TankFrame.INSTANCE;
         frame.setLocation(500, 30);
-//        int initTankCount = Integer.valueOf((String) PropertyMgr.getProp("initTankCount"));
 //music
         new Thread(()->new Audio("audio/war1.wav").loop()).start();
         //ui线程独立开，省的阻塞主线程

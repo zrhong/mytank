@@ -1,5 +1,10 @@
 package com.mashibing.tank;
 
+import com.mashibing.tank.net.Client;
+import com.mashibing.tank.net.msg.TankDirChangedMsg;
+import com.mashibing.tank.net.msg.TankStartMovingMsg;
+import com.mashibing.tank.net.msg.TankStopMsg;
+
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -21,7 +26,7 @@ public class TankFrame extends Frame {
     private Tank myTank = new Tank(r.nextInt(GAME_WIDTH), r.nextInt(GAME_HEIGHT), Dir.RIGHT, Group.GOOD, this);
     List<Bullet> bullets = new ArrayList<>();
     Map<UUID, Tank> tanks = new HashMap<>();
-//    public List<Tank> enemyTanks = new ArrayList<>();
+    //    public List<Tank> enemyTanks = new ArrayList<>();
     public List<Explosion> explosions = new ArrayList<>();
     //    Bullet bullet = new Bullet(30, 30, Dir.DOWN);
     public static final int GAME_WIDTH = 1080, GAME_HEIGHT = 960;
@@ -63,14 +68,15 @@ public class TankFrame extends Frame {
                     default:
                 }
                 setTankDir();
-                new Thread(()->new Audio("audio/tank_move.wav").play()).start();
+                new Thread(() -> new Audio("audio/tank_move.wav").play()).start();
             }
 
             private void setTankDir() {
+                Dir oldDir = myTank.getDir();
                 if (!bl && !br && !bu && !bd) {
                     myTank.setMoving(false);
+                    Client.INSTANCE.send(new TankStopMsg(getMainTank()));
                 } else {
-                    myTank.setMoving(true);
                     if (bl) {
                         myTank.setDir(Dir.LEFT);
                     }
@@ -82,6 +88,13 @@ public class TankFrame extends Frame {
                     }
                     if (bd) {
                         myTank.setDir(Dir.DOWN);
+                    }
+                    if (!myTank.isMoving()) {
+                        myTank.setMoving(true);
+                        Client.INSTANCE.send(new TankStartMovingMsg(getMainTank()));
+                    }
+                    if (oldDir != myTank.getDir()) {
+                        Client.INSTANCE.send(new TankDirChangedMsg(getMainTank()));
                     }
                 }
             }
@@ -131,7 +144,7 @@ public class TankFrame extends Frame {
         }
 
         //java8 stream api
-        tanks.values().stream().forEach((e)->e.paint(g));
+        tanks.values().stream().forEach((e) -> e.paint(g));
 //        for (int i = 0; i < enemyTanks.size(); i++) {
 //            enemyTanks.get(i).paint(g);
 //        }
@@ -140,7 +153,7 @@ public class TankFrame extends Frame {
 //                intersectDeal(bullets.get(i), enemyTanks.get(j));
 //            }
 //        }
-        for (int i = 0; i <explosions.size() ; i++) {
+        for (int i = 0; i < explosions.size(); i++) {
             explosions.get(i).paint(g);
         }
     }
@@ -185,7 +198,7 @@ public class TankFrame extends Frame {
         return myTank;
     }
 
-    public void addTank(Tank tank){
+    public void addTank(Tank tank) {
         tanks.put(tank.getId(), tank);
     }
 

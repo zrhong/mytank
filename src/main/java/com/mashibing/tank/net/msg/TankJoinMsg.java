@@ -37,15 +37,13 @@ public class TankJoinMsg extends Msg{
     public void handle() {
         //自己不用处理
         if(this.id.equals(TankFrame.INSTANCE.getMainTank().getId()) ||
-                //没有在的客户端也不用处理
+                //不是自己然后是别人
                 TankFrame.INSTANCE.findTankByUUID(this.id) != null) {
             return;
         }
-//		System.out.println(this);
         Tank t = new Tank(this);
         TankFrame.INSTANCE.addTank(t);
-
-        //send a new TankJoinMsg to the new joined tank
+//        别人（后来者）发过来的坦克加入信息，我也要把自己广播给服务器，然后让后来的人知道我的存在
         Client.INSTANCE.send(new TankJoinMsg(TankFrame.INSTANCE.getMainTank()));
     }
 
@@ -57,8 +55,6 @@ public class TankJoinMsg extends Msg{
         try {
             baos = new ByteArrayOutputStream();
             dos = new DataOutputStream(baos);
-
-            //dos.writeInt(TYPE.ordinal());
             dos.writeInt(x);
             dos.writeInt(y);
             dos.writeInt(dir.ordinal());
@@ -100,9 +96,7 @@ public class TankJoinMsg extends Msg{
             this.y = dis.readInt();
             this.dir = Dir.values()[dis.readInt()];
             this.moving = dis.readBoolean();
-//            this.group = Group.values()[dis.readInt()];
             this.id = new UUID(dis.readLong(), dis.readLong());
-            //this.name = dis.readUTF();
         } catch (IOException e) {
             e.printStackTrace();
         } finally {

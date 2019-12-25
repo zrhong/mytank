@@ -18,7 +18,7 @@ public class Tank {
     private int x;
     private int y;
     private Dir dir = Dir.RIGHT;
-    private final int speed = 5;
+    private final int speed = 2;
     private boolean moving = true;
     private TankFrame tankFrame;
     public static final int width = ResourceMgr.gtu.getWidth();
@@ -49,10 +49,6 @@ public class Tank {
         rectangle.x = this.x;
         rectangle.y = this.y;
         return rectangle;
-    }
-
-    public void setRectangle(Rectangle rectangle) {
-        this.rectangle = rectangle;
     }
 
     public Tank(int x, int y, Dir dir, Group group, TankFrame tankFrame) {
@@ -132,6 +128,9 @@ public class Tank {
 
     }
 
+    /**
+     * 边界检测
+     */
     private void boundsCheck() {
         if (x < 2) {
             x = 2;
@@ -151,6 +150,9 @@ public class Tank {
         dir = Dir.values()[random.nextInt(4)];
     }
 
+    /**
+     * 坦克发射炮弹
+     */
     public void fire() {
         new Thread(() -> new Audio("audio/tank_fire.wav").play()).start();
         switch (dir) {
@@ -171,6 +173,9 @@ public class Tank {
         }
     }
 
+    /**
+     * 挂了
+     */
     public void die() {
         alive = false;
         tankFrame.explosions.add(new Explosion(x, y, tankFrame));
