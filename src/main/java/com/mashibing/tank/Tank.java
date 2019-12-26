@@ -1,5 +1,7 @@
 package com.mashibing.tank;
 
+import com.mashibing.tank.net.Client;
+import com.mashibing.tank.net.msg.BulletNewMsg;
 import com.mashibing.tank.net.msg.TankJoinMsg;
 import lombok.Data;
 
@@ -67,7 +69,7 @@ public class Tank {
         Color c = g.getColor();
         g.setColor(Color.YELLOW);
         g.drawString(id.toString(), this.x, this.y - 20);
-        g.drawString("live=" + alive, x, y-10);
+        g.drawString("live=" + alive, x, y - 10);
         g.setColor(c);
         if (!alive) {
 //            tankFrame.enemyTanks.remove(this);
@@ -154,23 +156,30 @@ public class Tank {
      * 坦克发射炮弹
      */
     public void fire() {
-        new Thread(() -> new Audio("audio/tank_fire.wav").play()).start();
-        switch (dir) {
-            case RIGHT:
-                tankFrame.bullets.add(new Bullet(this.x + 65, this.y + 15, this.dir, this.group, this.tankFrame));
-                break;
-            case LEFT:
-                tankFrame.bullets.add(new Bullet(this.x - 30, this.y + 15, this.dir, this.group, this.tankFrame));
-                break;
-            case UP:
-                tankFrame.bullets.add(new Bullet(this.x + 15, this.y - 30, this.dir, this.group, this.tankFrame));
-                break;
-            case DOWN:
-                tankFrame.bullets.add(new Bullet(this.x + 15, this.y + 65, this.dir, this.group, this.tankFrame));
-                break;
-            default:
-
+        if (Group.GOOD.equals(group)) {
+            new Thread(() -> new Audio("audio/tank_fire.wav").play()).start();
         }
+        int bX = x + Tank.width / 2 - Bullet.width / 2;
+        int bY = y + Tank.height / 2 - Bullet.height / 2;
+//        switch (dir) {
+//            case RIGHT:
+//                tankFrame.bullets.add(new Bullet(this.x + 65, this.y + 15, this.dir, this.group, this.tankFrame));
+//                break;
+//            case LEFT:
+//                tankFrame.bullets.add(new Bullet(this.x - 30, this.y + 15, this.dir, this.group, this.tankFrame));
+//                break;
+//            case UP:
+//                tankFrame.bullets.add(new Bullet(this.x + 15, this.y - 30, this.dir, this.group, this.tankFrame));
+//                break;
+//            case DOWN:
+//                break;
+//            default:
+//                tankFrame.bullets.add(new Bullet(this.x + 15, this.y + 65, this.dir, this.group, this.tankFrame));
+//
+//        }
+        Bullet bullet = new Bullet(id, bX, bY, this.dir, this.tankFrame);
+        tankFrame.bullets.add(bullet);
+        Client.INSTANCE.send(new BulletNewMsg(bullet));
     }
 
     /**

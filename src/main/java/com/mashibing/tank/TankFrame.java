@@ -205,4 +205,8 @@ public class TankFrame extends Frame {
     public Tank findTankByUUID(UUID id) {
         return tanks.get(id);
     }
+
+    public void addBullet(Bullet bullet) {
+        bullets.add(bullet);
+    }
 }

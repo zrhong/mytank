@@ -1,6 +1,11 @@
 package com.mashibing.tank;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.awt.*;
+import java.util.UUID;
 
 /**
  * @author zhuruihong
@@ -8,6 +13,9 @@ import java.awt.*;
  * @date 2019/11/24 00:08
  * @description
  */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Bullet {
     private int x;
     private int y;
@@ -19,11 +27,15 @@ public class Bullet {
     private TankFrame tankFrame;
     private Group group;
     public Rectangle rectangle = new Rectangle(x,y, width, height);
-    public Bullet(int x, int y, Dir dir, Group group, TankFrame tankFrame) {
+    private UUID id = UUID.randomUUID();
+    private UUID playerId;
+
+    public Bullet(UUID playerId, int x, int y, Dir dir, TankFrame tankFrame) {
+        this.playerId = playerId;
         this.x = x;
         this.y = y;
         this.dir = dir;
-        this.group = group;
+//        this.group = group;
         this.tankFrame = tankFrame;
     }
 
@@ -31,38 +43,6 @@ public class Bullet {
         rectangle.x = this.x;
         rectangle.y = this.y;
         return rectangle;
-    }
-
-    public int getX() {
-        return x;
-    }
-
-    public void setX(int x) {
-        this.x = x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public void setY(int y) {
-        this.y = y;
-    }
-
-    public Dir getDir() {
-        return dir;
-    }
-
-    public void setDir(Dir dir) {
-        this.dir = dir;
-    }
-
-    public Group getGroup() {
-        return group;
-    }
-
-    public void setGroup(Group group) {
-        this.group = group;
     }
 
     public void paint(Graphics g) {
