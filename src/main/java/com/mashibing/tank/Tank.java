@@ -22,7 +22,7 @@ public class Tank {
     private Dir dir = Dir.RIGHT;
     private final int speed = 2;
     private boolean moving = true;
-    private TankFrame tankFrame;
+    private TankFrame tankFrame = TankFrame.INSTANCE;
     public static final int width = ResourceMgr.gtu.getWidth();
     public static final int height = ResourceMgr.gtu.getHeight();
     private boolean alive = true;
@@ -65,15 +65,15 @@ public class Tank {
     }
 
     public void paint(Graphics g) {
+        if (!alive) {
+            return;
+        }
         //uuid on head
         Color c = g.getColor();
         g.setColor(Color.YELLOW);
         g.drawString(id.toString(), this.x, this.y - 20);
         g.drawString("live=" + alive, x, y - 10);
         g.setColor(c);
-        if (!alive) {
-//            tankFrame.enemyTanks.remove(this);
-        }
         switch (dir) {
             case LEFT:
                 g.drawImage(this.group == Group.GOOD ? ResourceMgr.gtl : ResourceMgr.btl, x, y, null);
