@@ -19,11 +19,11 @@ import java.util.UUID;
 @NoArgsConstructor
 public class TankDieMsg extends Msg {
     UUID bulletId;
-    UUID id;
+    UUID tankId;
 
     public TankDieMsg(UUID bulletId, UUID id) {
         this.bulletId = bulletId;
-        this.id = id;
+        this.tankId = id;
     }
     @Override
     public void handle() {
@@ -32,12 +32,12 @@ public class TankDieMsg extends Msg {
             bullet.die();
         }
         //自己的坦克被挂了
-        if (id.equals(TankFrame.INSTANCE.getMainTank().getId())) {
+        if (tankId.equals(TankFrame.INSTANCE.getMainTank().getId())) {
             TankFrame.INSTANCE.getMainTank().die();
         } else {
-            Tank tank = TankFrame.INSTANCE.findTankByUUID(id);
+            Tank tank = TankFrame.INSTANCE.findTankByUUID(tankId);
             if (tank != null) {
-                System.out.println(TankFrame.INSTANCE.tanks.remove(id));
+                TankFrame.INSTANCE.tanks.remove(tankId);
                 tank.die();
             }
         }
@@ -52,8 +52,8 @@ public class TankDieMsg extends Msg {
             dos = new DataOutputStream(baos);
             dos.writeLong(bulletId.getMostSignificantBits());
             dos.writeLong(bulletId.getLeastSignificantBits());
-            dos.writeLong(id.getMostSignificantBits());
-            dos.writeLong(id.getLeastSignificantBits());
+            dos.writeLong(tankId.getMostSignificantBits());
+            dos.writeLong(tankId.getLeastSignificantBits());
             dos.flush();
         } catch (Exception e) {
             e.printStackTrace();
@@ -82,7 +82,7 @@ public class TankDieMsg extends Msg {
         DataInputStream dis = new DataInputStream(new ByteArrayInputStream(bytes));
         try {
             this.bulletId = new UUID(dis.readLong(), dis.readLong());
-            this.id = new UUID(dis.readLong(), dis.readLong());
+            this.tankId = new UUID(dis.readLong(), dis.readLong());
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
